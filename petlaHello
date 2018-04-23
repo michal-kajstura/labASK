@@ -1,0 +1,69 @@
+# program wybiera najwieksza liczbe
+.data
+	saRowne: .asciiz "liczby sa rowne\n"
+	najwieksza: .asciiz "najwieksza liczba to: "
+.text
+main:
+	li $t0, 999
+	li $t1, 999
+	li $t2, 999
+	
+	
+	# sprawdz czy t0 jest wieksze od t1 i t2
+	sgt $s0, $t0, $t1
+	sgt $s1, $t0, $t2
+
+	and $k0, $s0, $s1
+	beq $k0, 1, maxA
+	
+	# sprawdz czy t1 jest wieksze od t0 i t2
+	sgt $s0, $t1, $t0
+	sgt $s1, $t1, $t2
+
+	and $k0, $s0, $s1
+	beq $k0, 1, maxB
+	
+	# sprawdz czy t2 jest wieksze od t0 i t1
+	sgt $s0, $t2, $t0
+	sgt $s1, $t2, $t1
+
+	and $k0, $s0, $s1
+	beq $k0, 1,  maxC
+	
+	li $v0, 4
+	la $a0, saRowne
+	syscall
+	
+exit:
+	li $v0, 10
+	syscall
+	
+maxA:
+	li $v0, 4
+	la $a0, najwieksza
+	syscall
+	
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	j exit
+	
+maxB:
+	li $v0, 4
+	la $a0, najwieksza
+	syscall
+	
+	li $v0, 1
+	move $a0, $t1
+	syscall
+	j exit
+	
+maxC:
+	li $v0, 4
+	la $a0, najwieksza
+	syscall
+	
+	li $v0, 1
+	move $a0, $t2
+	syscall
+	j exit

@@ -1,0 +1,65 @@
+.data
+	podajLiczbe: .asciiz "Podaj liczbe: "
+	plus: .asciiz "+"
+	rownaSie: .asciiz "="
+.text
+
+main:
+	
+	# wyswietl tekst 
+	li $v0, 4
+	la $a0, podajLiczbe
+	syscall
+	
+	# pobierz liczbe
+	la $v0, 5
+	syscall
+	
+	# przenieś liczbę do rejestru t0
+	move $t0, $v0
+	
+	# drugi raz to samo
+	li $v0, 4
+	la $a0, podajLiczbe
+	syscall
+	
+	# pobierz liczbe
+	li $v0, 5
+	syscall
+	
+	# przenieś liczbę do rejestru t1
+	move $t1, $v0
+	
+	
+	#dodaj liczby, wynik zapisz w t2
+	add $t2, $t1, $t0
+	
+	# wyswietl liczbe1
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	
+	#wyswietl plus
+	li $v0, 4
+	la $a0, plus
+	syscall
+
+	# wyswietl liczbe2
+	li $v0, 1
+	move $a0, $t1
+	syscall
+	
+	#wyswietl rownaSie
+	li $v0, 4
+	la $a0, rownaSie
+	syscall
+	
+	# wyswietl wynik
+	li $v0, 1
+	move $a0, $t2
+	syscall
+	
+	#zakoncz program
+	li $v0, 10
+	syscall
+

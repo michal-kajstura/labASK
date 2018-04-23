@@ -1,0 +1,42 @@
+.data
+
+	rownaSie: .asciiz "liczby sa takie same!\n"
+	wieksze: .asciiz "pierwsza liczba jest wieksza\n"
+	mniejsze: .asciiz "pierwsza liczba jest mniejsza\n"
+	
+.text
+main:
+	#wczytaj i przenies dp t0 liczbe1
+	li $v0, 5
+	syscall
+	move $t0, $v0
+	#wczytaj i przenies do t1 liczbe2
+	li $v0, 5
+	syscall
+	move $t1, $v0
+
+	# jesli t0 == t1 to skocz do
+	beq $t0, $t1, equals
+	bgt $t0, $t1, moreThen
+	blt $t0, $t1, lessThen
+return_here:
+	li $v0, 10
+	syscall
+
+equals:
+	li $v0, 4
+	la $a0, rownaSie
+	syscall
+	j return_here
+	
+moreThen:
+	li $v0, 4
+	la $a0, wieksze
+	syscall
+	j return_here
+	
+lessThen:
+	li $v0, 4
+	la $a0, mniejsze
+	syscall
+	j return_here

@@ -1,0 +1,26 @@
+.text
+
+main:
+
+	li $v0, 5
+	syscall
+	move $t0, $v0
+	# ustaw t1 = 0 (suma)
+	li $t1, 0
+	# licznik
+	li $t2, 0
+	
+	
+while:
+	bgt $t2, $t0, exit
+	add $t1, $t1, $t2
+	add $t2, $t2, 1 # t2++ 
+	j while
+exit:
+	li $v0, 1
+	move $a0, $t1
+	syscall
+	
+	li $v0, 10
+	syscall
+	

@@ -1,0 +1,64 @@
+.data
+	inputA: .asciiz "a: "
+	inputB: .asciiz "b: "
+	inputC: .asciiz "c: "
+	najwiekszaLiczba: .asciiz "najwieksza liczba to: "
+.text
+main:
+	# print inputA
+	li $v0, 4
+	la $a0, inputA
+	syscall
+	# pobieram a
+	li $v0, 5
+	syscall
+	# przenosze a do s0
+	move $s0, $v0
+	#-----------------------------
+	# print inputB
+	li $v0, 4
+	la $a0, inputB
+	syscall
+	# pobieram a
+	li $v0, 5
+	syscall
+	# przenosze a do s1
+	move $s1, $v0
+	#-----------------------------
+	# print inputC
+	li $v0, 4
+	la $a0, inputC
+	syscall
+	# pobieram a
+	li $v0, 5
+	syscall
+	# przenosze a do s2
+	move $s2, $v0
+	#-----------------------------
+	
+	# maxNumer = a
+	add $t0, $zero, $s0
+	
+	# sprawdzam czy b jest wieksze od maxNumber
+	# jesli b jest mniejsze to skip
+	blt $s1, $t0, skip
+	# else
+	move $t0, $s1
+skip:
+	
+	# sprawdzam czy c jest wieksze od maxNumber
+	# czyli jesli jest mniejsze to skip1
+	blt $s2, $t0, skip1
+	# else
+	move $t0, $s2
+skip1:
+
+	# wyswietl najwieksza liczbe 
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	
+	li $v0, 10
+	syscall
+	
+	
