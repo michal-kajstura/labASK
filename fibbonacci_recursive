@@ -1,0 +1,58 @@
+.text
+
+main:
+	li $a0, 6
+	jal fib
+
+
+	move $a0, $v0
+	li $v0, 1
+	syscall
+
+	li $v0, 10
+	syscall
+	
+fib:
+	# zarezerwuj miejsce na stosie
+	addi $sp, $sp, -12
+	
+	# zapisz zmienne na stosie
+	sw $ra, 0($sp)
+	sw $s0, 4($sp)
+	sw $s1, 8($sp)
+	
+	# przypadek bazowy
+	# if (n == 0)
+	move $s0, $a0
+	beqz $s0, done
+	
+	# if (n == 1)
+	li $t0, 1
+	beq $s0, $t0, done
+	
+	# return fib(n-1) + fib(n-2)
+	
+	# n-1
+	addi $a0, $s0, -1
+	jal fib
+	move $s1, $v0
+	
+	# n-2
+	addi $a0, $s0, -2
+	jal fib
+	
+	# fib(n-1) + fib(n-2)
+	add $v0, $v0, $s1
+	j finish
+	
+done:
+	move $v0, $s0
+	j finish
+	
+finish:
+	lw $s1, 8($sp)
+	lw $s0, 4($sp)
+	lw $ra, 0($sp)
+	addi $sp, $sp, 12
+	jr $ra
+		

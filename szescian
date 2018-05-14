@@ -1,0 +1,110 @@
+# Program liczy pole powierzchni i objętosc szescianu
+# przy pomocy procedur
+
+.data 
+	msg_getX: .asciiz "Wprowadz dlugosc boku szescianu: "
+	msg_s: .asciiz "Pole powierzchni jest rowne: "
+	msg_v: .asciiz "Objetosc jest rowna: "
+	msg_wrong_data: .asciiz "Dane sa nieprawidlowe!"
+	newline: .asciiz "\n"
+
+.text
+main:
+	jal wczytajDane
+	
+	# sprawdz poprawnosc danych
+	# a0 = x
+	move $a0, $v0
+	jal sprawdzDane
+	
+
+	
+	# oblicz objetosc
+	jal obliczObj
+	
+	# s0 = V
+	move $s0, $v0
+	
+	# oblicz pole powierzchni
+	jal obliczPole
+	move $s1, $v0
+	
+	# wyswietl wyniki
+	move $a0, $s0
+	la $a1, msg_v
+	jal wyswietlWynik
+	
+	move $a0, $s1
+	la $a1, msg_s
+	jal wyswietlWynik
+	
+	# koniec programu
+	li $v0, 10
+	syscall
+	
+	
+	
+
+wczytajDane:
+	# wczytaj dlugosc boku
+	li $v0, 4
+	la $a0, msg_getX
+	syscall
+	
+	li $v0, 5
+	syscall
+	
+	jr $ra
+
+sprawdzDane:
+	# jesli x <= 0 to wyswietl msg_wrong_data
+	bgtz $a0, skoczDoWywolania
+
+	# wyswietl komunikat o zlych danych
+	li $v0, 4
+	la $a0, msg_wrong_data
+	syscall
+	j main
+	skoczDoWywolania:
+		jr $ra
+
+		
+obliczObj:
+	# V = x^3
+	mul $t0, $a0, $a0
+	mul $t0, $t0, $a0
+	move $v0, $t0
+	
+	jr $ra
+	
+obliczPole:
+	# S = x^2 * 6
+	mul $t0, $a0, $a0
+	li $t1, 6
+	mul $t0, $t0, $t1
+	move $v0, $t0
+	
+	jr $ra
+	
+wyswietlWynik:
+	move $t0, $a0
+	move $t1, $a1
+
+	li $v0, 4
+	move $a0, $t1
+	syscall
+	
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	
+	li $v0, 4
+	la $a0, newline
+	syscall
+	
+	jr $ra
+	
+	
+	
+
+	
