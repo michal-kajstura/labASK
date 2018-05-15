@@ -1,0 +1,66 @@
+.data
+	wprowadzLiczbe: .asciiz "Podaj liczbe: "
+	number: .word 0
+	answer: .word 0
+	odpowiedz: .ascii "Silnia jest rowna :"
+.text
+main:
+	li $v0, 4
+	la $a0, wprowadzLiczbe
+	syscall
+	
+	li $v0, 5
+	syscall
+	
+	move $a0, $v0
+	
+	jal factorial
+	
+	move $t0, $v0
+	
+	li $v0, 4
+	la $a0, odpowiedz
+	syscall
+	
+	li $v0, 1
+	move $a0, $t0
+	syscall
+	
+	# koniec programu
+	li $v0, 10
+	syscall
+	
+.globl factorial
+factorial:
+	# zarezerwuj miejsce na stosie
+	addi $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $s0, 4($sp)
+	
+	# Base case
+	li $v0, 1
+	beq $a0, 0, factorialDone
+	
+	# factorial(number-1)
+	move $s0, $a0
+	subi $a0, $a0, 1
+	
+	jal factorial
+	
+	mul $v0, $v0, $s0
+	
+	# Jesli przypadek bazowy został spełniony
+	factorialDone:
+		lw $ra, 0($sp)
+		lw $s0, 4($sp)
+		addi $sp, $sp, 8
+		
+		jr $ra
+		
+	
+		
+		
+	
+	
+	
+	
