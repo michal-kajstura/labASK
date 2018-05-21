@@ -1,0 +1,36 @@
+# rekurencyjnie oblicza f(n) = 3 * f(n-1) + 1; f(0) = 0
+
+ 
+main:
+	li $a0, 5
+	jal funkcja
+	
+	move $a0, $v0
+	li $v0, 1
+	syscall
+	
+	li $v0, 10
+	syscall
+
+funkcja:
+	addi $sp, $sp, -4
+	sw $ra, ($sp)
+	
+	beqz $a0, baseCase
+	
+	addi $a0, $a0, -1
+	jal funkcja
+	
+	li $t0, 3
+	mul $v0, $v0, $t0
+	addi $v0, $v0, 1
+	
+	end:
+
+		lw $ra, ($sp)
+		addi $sp, $sp, 4
+		jr $ra
+	
+	baseCase:
+		li $v0, 0 # s0 = 1
+		j end

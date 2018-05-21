@@ -1,0 +1,73 @@
+# tworzy tablice n integerow i wczytuje je z klawiatury
+.data
+	array_size: .word 10
+	array: .word 9, 8, 3, 4, 5, 1, 2, 3, 4, 5
+	ile: .asciiz "ile intow wpisac? "
+	
+.text
+
+main:
+	jal wpiszInt
+	jal wyswietl
+	
+wpiszInt:
+	
+	li $v0, 4
+	la $a0, ile
+	syscall
+	
+	# ile zarezerwowac
+	#li $t1, 4
+	#mul $s0, $v0, $t1
+	sll $a0, $v0, 2
+	li $v0, 9
+	syscall
+	move $s1, $v0
+	
+	
+	# t0 = 0
+	li $t0, 0
+	# s0 = array_size * 4
+	li $t1, 4
+	
+whileWpisz:
+	add $t1, $t0, $s1
+	
+	li $v0, 5
+	syscall
+	move $t2, $v0
+	
+	# array[t0] = wpisany int
+	sw $t2, ($s1)
+	
+	# t0 += 4
+	addi $t0, $t0, 4
+	
+	blt $t0, $s0, whileWpisz
+
+	jr $ra
+	
+	
+wyswietl:
+	# t0 = 0
+	li $t0, 0
+	# s0 = array_size * 4
+	lw $s0, array_size
+	li $t1, 4
+	mul $s0, $s0, $t1
+	la $s1, array
+while:
+	add $t1, $t0, $s1
+	
+	li $v0, 1
+	lw $a0, ($t1)
+	syscall
+	
+	addi $t0, $t0, 4
+	
+	blt $t0, $s0, while 
+	
+	li $v0, 10
+	syscall
+	
+	jr $ra
