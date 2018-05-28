@@ -1,0 +1,249 @@
+# pyta uzytkownika o wymiary n i m tablicy, potem prosi o wprowadzenie, potem wyswietla
+
+.data
+	podajWiersze: .asciiz "Podaj liczbe wierszy: "
+	podajKolumny: .asciiz "Podaj liczbe kolumn: "
+	podajElementStart: .asciiz "a["
+	podajElementMid: .asciiz "]["
+	podajElementEnd: .asciiz "]: "
+	spacja: .asciiz " "
+	newline: .asciiz "\n"
+	
+.text
+
+main:
+	jal getWymiary
+	
+	move $s6, $v0
+	move $s7, $v1
+	
+	move $a0, $v0
+	move $a1, $v1
+	
+	jal makeArray
+	move $s5, $v0
+	
+	move $a0, $v0
+	move $a1, $s6
+	move $a2, $s7
+	jal loadNumbers
+	
+	move $a0, $s5
+	# a1 i a2 nie byly ruszane
+	jal displayArray
+	
+	move $a0, $s5
+	# a1 i a2 nie byly ruszane
+	jal sumOfArray
+	
+	move $a0, $v0
+	li $v0, 1
+	syscall
+	
+	move $a0, $s5
+	# a1 i a2 nie byly ruszane
+	jal sumOfDiagonal
+	
+	move $a0, $v0
+	li $v0, 1
+	syscall
+	
+	li $v0, 10
+	syscall
+
+getWymiary:
+	li $v0, 4
+	la $a0, podajWiersze
+	syscall
+	
+	li $v0, 5
+	syscall
+	move $t0, $v0
+	
+	li $v0, 4
+	la $a0, podajKolumny
+	syscall
+	
+	li $v0, 5
+	syscall
+	move $t1, $v0
+	
+	move $v0, $t0
+	move $v1, $t1
+	
+	jr $ra
+	
+	
+makeArray:
+	 mul $t0, $a0, $a1
+	 
+	 move $a0, $t0
+	 
+	 li $v0, 9
+	 syscall
+	 
+	 jr $ra
+	 
+loadNumbers:
+	move $s0, $a0 # adres tablicy
+	move $s1, $a1 # ilosc wierszy
+	move $s2, $a2 # ilosc kolumn
+	
+	li $t0, 0 # wiersze
+	li $t1, 0 # kolumny
+	
+	#iteracja po wierszach
+	whileRow:
+		li $t1, 0 # zerujemy kolumny 
+		
+		whileCol:
+			# adres i-tego wiersza
+			mul $t2, $t0, $s2 # rowIndex * colSize
+			add $t2, $t2, $t1 # t2 + colIndex
+			li $t3, 4
+			mul $t2, $t2, $t3 # t2 * 4
+			add $t2, $t2, $s0 # adres elementu [i][j]
+	
+			# a[i][j] = ...
+			li $v0, 4
+			la $a0, podajElementStart
+			syscall
+			
+			li $v0, 1
+			move $a0, $t0
+			syscall
+			
+			li $v0, 4
+			la $a0, podajElementMid
+			syscall
+			
+			li $v0, 1
+			move $a0, $t1
+			syscall
+			
+			li $v0, 4
+			la $a0, podajElementEnd
+			syscall
+			
+			# teraz wpisujemy wartosc pod adres t2
+			li $v0, 5
+			syscall
+			sw $v0, ($t2)
+
+			addi $t1, $t1, 1
+			# if kolumny < ilosc kolumn -> petla
+			blt $t1, $s2, whileCol
+
+		addi $t0, $t0, 1 # inkrementujemy wiersz
+		blt $t0, $s1, whileRow
+	
+	jr $ra
+	
+displayArray:
+	move $s0, $a0 # adres tablicy
+	move $s1, $a1 # ilosc wierszy
+	move $s2, $a2 # ilosc kolumn
+	
+	li $t0, 0 # wiersze
+	li $t1, 0 # kolumny
+	
+	#iteracja po wierszach
+	whileRowDisplay:
+		li $t1, 0 # zerujemy kolumny 
+		
+		whileColDisplay:
+			# adres i-tego wiersza
+			mul $t2, $t0, $s2 # rowIndex * colSize
+			add $t2, $t2, $t1 # t2 + colIndex
+			li $t3, 4
+			mul $t2, $t2, $t3 # t2 * 4
+			add $t2, $t2, $s0 # adres elementu [i][j]
+	
+			
+			li $v0, 1
+			lw $a0, ($t2)
+			syscall
+			
+			li $v0, 4
+			la $a0, spacja
+			syscall
+
+			addi $t1, $t1, 1
+			# if kolumny < ilosc kolumn -> petla
+			blt $t1, $s2, whileColDisplay
+		
+		li $v0, 4
+		la $a0, newline
+		syscall
+		
+		addi $t0, $t0, 1 # inkrementujemy wiersz
+		blt $t0, $s1, whileRowDisplay
+	
+	jr $ra	
+
+sumOfArray:
+	move $s0, $a0 # adres tablicy
+	move $s1, $a1 # ilosc wierszy
+	move $s2, $a2 # ilosc kolumn
+	
+	li $t0, 0 # wiersze
+	li $t1, 0 # kolumny
+	
+	li $t4, 0 # suma
+	
+	#iteracja po wierszach
+	whileRowSum:
+		li $t1, 0 # zerujemy kolumny 
+		
+		whileColSum:
+			# adres i-tego wiersza
+			mul $t2, $t0, $s2 # rowIndex * colSize
+			add $t2, $t2, $t1 # t2 + colIndex
+			li $t3, 4
+			mul $t2, $t2, $t3 # t2 * 4
+			add $t2, $t2, $s0 # adres elementu [i][j]
+	
+			
+			lw $t5, ($t2)
+			add $t4, $t4, $t5
+		
+			addi $t1, $t1, 1
+			# if kolumny < ilosc kolumn -> petla
+			blt $t1, $s2, whileColSum
+		
+		addi $t0, $t0, 1 # inkrementujemy wiersz
+		blt $t0, $s1, whileRowSum
+	
+	move $v0, $t4
+
+	jr $ra		
+	 
+sumOfDiagonal:
+# tylko dla macierzy nxn
+	move $s0, $a0 # adres tablicy
+	move $s1, $a1 # wymiar
+	
+	li $t0, 0 # wymiar_i
+	
+	li $t4, 0 # suma
+	
+	#iteracja po wierszach
+
+	whileDiagonal:
+		# adres i-tego wiersza
+		mul $t2, $t0, $s1 # rowIndex * colSize
+		add $t2, $t2, $t0 # t2 + colIndex
+		li $t3, 4
+		mul $t2, $t2, $t3 # t2 * 4
+		add $t2, $t2, $s0 # adres elementu [i][j]
+
+		lw $t5, ($t2)
+		add $t4, $t4, $t5
+	
+		addi $t0, $t0, 1
+
+		blt $t0, $s1, whileDiagonal
+	
+	move $v0, $t4
+
+	jr $ra	
